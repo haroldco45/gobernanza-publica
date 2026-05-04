@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gobernanza Pro - Veeduría y Gestión Pública</title>
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --accent: #fdbb2d;
+            --bg: #f4f7f6;
+            --text: #2d3436;
+            --white: #ffffff;
+            --success: #27ae60;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--primary);
+        }
+
+        h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .veeduria-box {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-secop { background-color: #003366; color: white; }
+        .btn-backup { background-color: var(--success); color: white; }
+        .btn-restore { background-color: #8e44ad; color: white; }
+        .btn-danger { background-color: var(--secondary); color: white; }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { padding: 15px; border: 1px solid #eee; text-align: left; }
+        th { background: var(--primary); color: white; }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gobernanza Pro HM</h1>
+    <p>Transparencia, Ética y Control Social del Erario Público</p>
+</header>
+
+<div class="container">
+    
+    <div class="card" style="border-top-color: var(--accent);">
+        <h2>🔍 Módulo de Veeduría: ¿En qué invierten mis impuestos?</h2>
+        <p>Utiliza estos enlaces oficiales para consultar procesos de contratación en tiempo real, licitaciones y adjudicaciones del Estado Colombiano.</p>
+        <div class="veeduria-box">
+            <a href="https://www.contratos.gov.co/consultas/inicioConsulta.do" target="_blank" class="btn btn-secop">
+                🌐 Consultar SECOP I (Procesos Anteriores)
+            </a>
+            <a href="https://community.secop.gov.co/Public/Tendering/ContractNoticeManagement/Index?currentLanguage=es-CO&Page=1&isPublicArea=True" target="_blank" class="btn btn-secop">
+                🚀 Consultar SECOP II (En Tiempo Real)
+            </a>
+            <a href="https://paco.casals.gov.co/" target="_blank" class="btn btn-secop" style="background:#d35400;">
+                🛡️ Portal PACO (Anticorrupción)
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💾 Control de Respaldo y Datos</h2>
+        <div class="grid">
+            <div>
+                <button onclick="exportData()" class="btn btn-backup">📥 Descargar Backup de Gestión (JSON)</button>
+            </div>
+            <div>
+                <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+                <button onclick="document.getElementById('importFile').click()" class="btn btn-restore">📤 Restaurar Información</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>✍️ Registro de Veeduría Local</h2>
+            <form id="projectForm">
+                <label>Entidad o Municipio</label>
+                <input type="text" id="pEntity" placeholder="Ej: Alcaldía de Caucasia" required>
+                
+                <label>Objeto del Contrato / Proyecto</label>
+                <textarea id="pName" placeholder="Descripción de lo que están construyendo o comprando" required></textarea>
+                
+                <label>Valor del Contrato (COP)</label>
+                <input type="number" id="pBudget" placeholder="$$$" required>
+                
+                <label>Hallazgo / Estado</label>
+                <select id="pStatus">
+                    <option value="Correcto">Ejecución Normal</option>
+                    <option value="Alerta">Alerta / Retraso</option>
+                    <option value="Irregularidad">Posible Irregularidad</option>
+                    <option value="Terminado">Terminado con Éxito</option>
+                </select>
+
+                <button type="submit" class="btn" style="width:100%">Guardar en Mi Tablero</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>📖 Guía de Ética HM</h2>
+            <p>Para no fallarle al pueblo, el veedor debe:</p>
+            <ul>
+                <li><strong>Verificar:</strong> Que lo que dice el papel coincida con la obra física.</li>
+                <li><strong>Documentar:</strong> Tomar fotos y recolectar testimonios.</li>
+                <li><strong>Denunciar:</strong> Ante la Contraloría si los recursos se desvían.</li>
+                <li><strong>Rendir:</strong> Informar a la comunidad los hallazgos.</li>
+            </ul>
+            <hr>
+            <p><em>"El hersario público es sagrado, cada peso cuenta para el progreso."</em></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📋 Mi Diario de Veeduría y Control</h2>
+        <div style="overflow-x: auto;">
+            <table id="projectTable">
+                <thead>
+                    <tr>
+                        <th>Entidad</th>
+                        <th>Objeto</th>
+                        <th>Presupuesto</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>VIBRAS POSITIVAS HM</strong> - Derechos de Autor © 2026</p>
+        <p>Diseñado para la transparencia y la eficiencia en la gestión pública colombiana.</p>
+    </div>
+</div>
+
+<script>
+    let projects = JSON.parse(localStorage.getItem('gp_veeduria_v1')) || [];
+    const projectTable = document.querySelector('#projectTable tbody');
+
+    function updateUI() {
+        projectTable.innerHTML = '';
+        projects.forEach(p => {
+            const row = `
+                <tr>
+                    <td><strong>${p.entity}</strong></td>
+                    <td>${p.name}</td>
+                    <td>$${p.budget.toLocaleString()}</td>
+                    <td><span class="tag" style="background:${getStatusColor(p.status)}; color:white">${p.status}</span></td>
+                    <td><button onclick="deleteItem(${p.id})" class="btn-danger" style="padding:5px 10px; font-size:10px;">X</button></td>
+                </tr>
+            `;
+            projectTable.innerHTML += row;
+        });
+    }
+
+    function getStatusColor(status) {
+        if(status === 'Correcto') return '#27ae60';
+        if(status === 'Alerta') return '#f39c12';
+        if(status === 'Irregularidad') return '#c0392b';
+        return '#34495e';
+    }
+
+    document.getElementById('projectForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newItem = {
+            id: Date.now(),
+            entity: document.getElementById('pEntity').value,
+            name: document.getElementById('pName').value,
+            budget: parseFloat(document.getElementById('pBudget').value),
+            status: document.getElementById('pStatus').value
+        };
+        projects.push(newItem);
+        save();
+        updateUI();
+        e.target.reset();
+    });
+
+    function save() { localStorage.setItem('gp_veeduria_v1', JSON.stringify(projects)); }
+
+    function deleteItem(id) {
+        projects = projects.filter(p => p.id !== id);
+        save();
+        updateUI();
+    }
+
+    // SISTEMA DE BACKUP
+    function exportData() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projects, null, 2));
+        const dlAnchor = document.createElement('a');
+        dlAnchor.setAttribute("href", dataStr);
+        dlAnchor.setAttribute("download", "VEEDURIA_HM_BACKUP_" + new Date().toISOString().slice(0,10) + ".json");
+        dlAnchor.click();
+    }
+
+    function importData(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            projects = JSON.parse(e.target.result);
+            save();
+            updateUI();
+            alert("Información restaurada correctamente.");
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
