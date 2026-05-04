@@ -1,1 +1,37 @@
+{
+  "name": "Gobernanza Pro HM",
+  "short_name": "GobernanzaPro",
+  "description": "Veeduría ciudadana y control social del erario público colombiano",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a2a6c",
+  "theme_color": "#1a2a6c",
+  "orientation": "portrait-primary",
+  "lang": "es-CO",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["government", "productivity", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Nueva Veeduría",
+      "short_name": "Registrar",
+      "description": "Registrar nuevo hallazgo de veeduría",
+      "url": "./index.html#registro",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
 
