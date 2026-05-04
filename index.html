@@ -2,290 +2,945 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gobernanza Pro - Veeduría y Gestión Pública</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a2a6c">
+    <meta name="description" content="Veeduría ciudadana y control social del erario público colombiano">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GobernanzaPro">
+
+    <title>Gobernanza Pro HM</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple Touch Icon (usar PNG real en producción) -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #1a2a6c;
+            --primary:   #1a2a6c;
+            --primary-d: #111c4e;
             --secondary: #b21f1f;
-            --accent: #fdbb2d;
-            --bg: #f4f7f6;
-            --text: #2d3436;
-            --white: #ffffff;
-            --success: #27ae60;
+            --accent:    #fdbb2d;
+            --bg:        #f0f3fa;
+            --card:      #ffffff;
+            --text:      #1e2532;
+            --muted:     #6b7280;
+            --success:   #16a34a;
+            --warning:   #d97706;
+            --danger:    #dc2626;
+            --radius:    12px;
+            --shadow:    0 2px 16px rgba(26,42,108,.10);
+            --shadow-lg: 0 8px 32px rgba(26,42,108,.16);
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body:    'Source Sans 3', Arial, sans-serif;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg);
+            font-family: var(--font-body);
+            background: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            padding-bottom: calc(80px + var(--safe-bottom));
         }
 
+        /* ── HEADER ── */
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--white);
-            padding: 2rem;
+            background: linear-gradient(145deg, var(--primary-d) 0%, var(--primary) 60%, #2e3e8a 100%);
+            color: #fff;
+            padding: 2rem 1.5rem 1.5rem;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,.25);
         }
 
+        header h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            letter-spacing: .5px;
+        }
+
+        header p {
+            font-size: .85rem;
+            opacity: .8;
+            margin-top: .3rem;
+            letter-spacing: .3px;
+        }
+
+        /* Banda de estado PWA */
+        #pwaStatus {
+            font-size: .75rem;
+            margin-top: .5rem;
+            padding: .3rem .8rem;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        #pwaStatus.online  { background: rgba(22,163,74,.25);  color: #86efac; }
+        #pwaStatus.offline { background: rgba(220,38,38,.25);  color: #fca5a5; }
+
+        /* ── INSTALL BANNER ── */
+        #installBanner {
+            background: linear-gradient(90deg, var(--accent), #f59e0b);
+            color: var(--primary-d);
+            padding: .75rem 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-weight: 700;
+            font-size: .85rem;
+        }
+
+        #installBanner button {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: .45rem .9rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: .82rem;
+            white-space: nowrap;
+        }
+
+        #installBanner .close-banner {
+            background: transparent;
+            color: var(--primary-d);
+            font-size: 1.1rem;
+            padding: 0 .4rem;
+        }
+
+        /* ── CONTAINER ── */
         .container {
             max-width: 1100px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 1.2rem 1rem;
         }
 
-        .card {
-            background: var(--white);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 5px solid var(--primary);
-        }
-
-        h2 { color: var(--primary); display: flex; align-items: center; gap: 10px; }
-
-        .veeduria-box {
-            background: #e8f4fd;
-            border: 1px solid #3498db;
-            border-radius: 8px;
-            padding: 20px;
+        /* ── TABS (bottom nav mobile) ── */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-d);
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
+            justify-content: space-around;
+            padding: .6rem .5rem calc(.6rem + var(--safe-bottom));
+            box-shadow: 0 -4px 16px rgba(0,0,0,.3);
+            z-index: 200;
         }
 
-        .btn {
-            padding: 12px 24px;
-            border-radius: 6px;
+        nav.bottom-nav button {
+            background: none;
             border: none;
+            color: rgba(255,255,255,.55);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            font-size: .65rem;
+            font-family: var(--font-body);
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
+            padding: .3rem .6rem;
+            border-radius: 8px;
+            transition: color .2s, background .2s;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+        }
+
+        nav.bottom-nav button .icon { font-size: 1.3rem; }
+        nav.bottom-nav button.active { color: var(--accent); }
+        nav.bottom-nav button:hover  { background: rgba(255,255,255,.07); }
+
+        /* ── SECTIONS ── */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin-bottom: 1.2rem;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--primary);
+        }
+
+        .card.accent   { border-top-color: var(--accent); }
+        .card.success  { border-top-color: var(--success); }
+        .card.danger   { border-top-color: var(--danger); }
+
+        h2 {
+            font-family: var(--font-display);
+            color: var(--primary);
+            font-size: 1.15rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── VEEDURÍA LINKS ── */
+        .veeduria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: .75rem;
+        }
+
+        .vlink {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: .9rem 1rem;
+            border-radius: 10px;
             text-decoration: none;
+            font-weight: 700;
+            font-size: .85rem;
+            transition: transform .2s, box-shadow .2s;
+            color: #fff;
+        }
+
+        .vlink:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .vlink .icon { font-size: 1.4rem; }
+        .vlink.secop1  { background: linear-gradient(135deg, #003366, #0055a5); }
+        .vlink.secop2  { background: linear-gradient(135deg, #0055a5, #0080cc); }
+        .vlink.paco    { background: linear-gradient(135deg, #7b2d00, #d35400); }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom: .9rem; }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: .82rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: .35rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: .75rem 1rem;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: .92rem;
+            color: var(--text);
+            transition: border-color .2s, box-shadow .2s;
+            background: #fafbff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26,42,108,.12);
+        }
+
+        textarea { resize: vertical; min-height: 70px; }
+
+        /* ── BUTTONS ── */
+        .btn {
             display: inline-flex;
             align-items: center;
-            transition: 0.3s;
-            font-size: 0.9rem;
+            justify-content: center;
+            gap: 7px;
+            padding: .75rem 1.3rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: .88rem;
+            transition: opacity .2s, transform .15s;
+            text-decoration: none;
         }
 
-        .btn-secop { background-color: #003366; color: white; }
-        .btn-backup { background-color: var(--success); color: white; }
-        .btn-restore { background-color: #8e44ad; color: white; }
-        .btn-danger { background-color: var(--secondary); color: white; }
+        .btn:hover { opacity: .88; transform: translateY(-1px); }
+        .btn:active { transform: scale(.97); }
+        .btn-primary  { background: var(--primary);   color: #fff; width: 100%; }
+        .btn-success  { background: var(--success);   color: #fff; }
+        .btn-purple   { background: #7c3aed;           color: #fff; }
+        .btn-danger   { background: var(--danger);     color: #fff; }
+        .btn-sm       { padding: .35rem .7rem; font-size: .78rem; border-radius: 6px; }
 
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        .grid {
+        /* ── STATS DASHBOARD ── */
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: .75rem;
+            margin-bottom: 1rem;
         }
 
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
+        @media(min-width: 500px) { .stats-row { grid-template-columns: repeat(4, 1fr); } }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
-        th, td { padding: 15px; border: 1px solid #eee; text-align: left; }
-        th { background: var(--primary); color: white; }
-
-        .footer {
+        .stat-box {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1rem;
             text-align: center;
-            padding: 30px;
-            color: #666;
-            font-size: 0.85rem;
+            box-shadow: var(--shadow);
+            border-bottom: 3px solid var(--primary);
         }
 
-        .tag {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
+        .stat-box .num {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .stat-box .lbl {
+            font-size: .72rem;
+            color: var(--muted);
+            font-weight: 700;
             text-transform: uppercase;
-            font-weight: bold;
+            letter-spacing: .4px;
+        }
+
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; border-radius: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .86rem;
+        }
+
+        thead th {
+            background: var(--primary);
+            color: #fff;
+            padding: .75rem 1rem;
+            text-align: left;
+            font-family: var(--font-display);
+            font-size: .82rem;
+            letter-spacing: .3px;
+        }
+
+        tbody tr { border-bottom: 1px solid #e5e7eb; }
+        tbody tr:hover { background: #f8faff; }
+        tbody td { padding: .7rem 1rem; vertical-align: middle; }
+
+        /* ── STATUS TAGS ── */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: .25rem .6rem;
+            border-radius: 20px;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            color: #fff;
+        }
+
+        /* ── GUÍA ── */
+        .guide-list { list-style: none; }
+        .guide-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: .7rem 0;
+            border-bottom: 1px solid #f0f2f8;
+            font-size: .92rem;
+            line-height: 1.5;
+        }
+
+        .guide-list li:last-child { border-bottom: none; }
+        .guide-list .step-num {
+            min-width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: .8rem;
+            margin-top: 1px;
+        }
+
+        blockquote {
+            border-left: 4px solid var(--accent);
+            padding: .7rem 1rem;
+            background: #fffbeb;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            margin-top: 1rem;
+            color: var(--primary);
+            font-size: .9rem;
+        }
+
+        /* ── BACKUP SECTION ── */
+        .backup-row {
+            display: flex;
+            gap: .75rem;
+            flex-wrap: wrap;
+        }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--muted);
+        }
+
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: .5rem; }
+        .empty-state p { font-size: .9rem; }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: calc(80px + var(--safe-bottom) + 10px);
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--primary);
+            color: #fff;
+            padding: .7rem 1.4rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: .85rem;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: opacity .3s, transform .3s;
+            pointer-events: none;
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            font-size: .78rem;
+            color: var(--muted);
+            border-top: 1px solid #e5e7eb;
+            margin-top: 1rem;
+        }
+
+        /* ── MEDIA ── */
+        @media (max-width: 480px) {
+            .card { padding: 1rem; }
+            h2 { font-size: 1.05rem; }
         }
     </style>
 </head>
 <body>
 
+<!-- ── HEADER ────────────────────────────────────────────────── -->
 <header>
-    <h1>Gobernanza Pro HM</h1>
+    <h1>⚖️ Gobernanza Pro HM</h1>
     <p>Transparencia, Ética y Control Social del Erario Público</p>
+    <span id="pwaStatus" class="online">🟢 En línea</span>
 </header>
 
-<div class="container">
-    
-    <div class="card" style="border-top-color: var(--accent);">
-        <h2>🔍 Módulo de Veeduría: ¿En qué invierten mis impuestos?</h2>
-        <p>Utiliza estos enlaces oficiales para consultar procesos de contratación en tiempo real, licitaciones y adjudicaciones del Estado Colombiano.</p>
-        <div class="veeduria-box">
-            <a href="https://www.contratos.gov.co/consultas/inicioConsulta.do" target="_blank" class="btn btn-secop">
-                🌐 Consultar SECOP I (Procesos Anteriores)
-            </a>
-            <a href="https://community.secop.gov.co/Public/Tendering/ContractNoticeManagement/Index?currentLanguage=es-CO&Page=1&isPublicArea=True" target="_blank" class="btn btn-secop">
-                🚀 Consultar SECOP II (En Tiempo Real)
-            </a>
-            <a href="https://paco.casals.gov.co/" target="_blank" class="btn btn-secop" style="background:#d35400;">
-                🛡️ Portal PACO (Anticorrupción)
-            </a>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>💾 Control de Respaldo y Datos</h2>
-        <div class="grid">
-            <div>
-                <button onclick="exportData()" class="btn btn-backup">📥 Descargar Backup de Gestión (JSON)</button>
-            </div>
-            <div>
-                <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-                <button onclick="document.getElementById('importFile').click()" class="btn btn-restore">📤 Restaurar Información</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <h2>✍️ Registro de Veeduría Local</h2>
-            <form id="projectForm">
-                <label>Entidad o Municipio</label>
-                <input type="text" id="pEntity" placeholder="Ej: Alcaldía de Caucasia" required>
-                
-                <label>Objeto del Contrato / Proyecto</label>
-                <textarea id="pName" placeholder="Descripción de lo que están construyendo o comprando" required></textarea>
-                
-                <label>Valor del Contrato (COP)</label>
-                <input type="number" id="pBudget" placeholder="$$$" required>
-                
-                <label>Hallazgo / Estado</label>
-                <select id="pStatus">
-                    <option value="Correcto">Ejecución Normal</option>
-                    <option value="Alerta">Alerta / Retraso</option>
-                    <option value="Irregularidad">Posible Irregularidad</option>
-                    <option value="Terminado">Terminado con Éxito</option>
-                </select>
-
-                <button type="submit" class="btn" style="width:100%">Guardar en Mi Tablero</button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>📖 Guía de Ética HM</h2>
-            <p>Para no fallarle al pueblo, el veedor debe:</p>
-            <ul>
-                <li><strong>Verificar:</strong> Que lo que dice el papel coincida con la obra física.</li>
-                <li><strong>Documentar:</strong> Tomar fotos y recolectar testimonios.</li>
-                <li><strong>Denunciar:</strong> Ante la Contraloría si los recursos se desvían.</li>
-                <li><strong>Rendir:</strong> Informar a la comunidad los hallazgos.</li>
-            </ul>
-            <hr>
-            <p><em>"El hersario público es sagrado, cada peso cuenta para el progreso."</em></p>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>📋 Mi Diario de Veeduría y Control</h2>
-        <div style="overflow-x: auto;">
-            <table id="projectTable">
-                <thead>
-                    <tr>
-                        <th>Entidad</th>
-                        <th>Objeto</th>
-                        <th>Presupuesto</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="footer">
-        <p><strong>VIBRAS POSITIVAS HM</strong> - Derechos de Autor © 2026</p>
-        <p>Diseñado para la transparencia y la eficiencia en la gestión pública colombiana.</p>
+<!-- ── INSTALL BANNER (oculto por defecto) ──────────────────── -->
+<div id="installBanner" style="display:none;">
+    <span>📲 Instala esta app en tu dispositivo para usarla sin internet</span>
+    <div style="display:flex; gap:6px;">
+        <button id="btnInstall">Instalar</button>
+        <button class="close-banner" id="btnCloseBanner">✕</button>
     </div>
 </div>
 
+<!-- ── CONTENIDO PRINCIPAL ──────────────────────────────────── -->
+<div class="container">
+
+    <!-- ═══════════════ SECCIÓN: INICIO ═══════════════ -->
+    <section class="section active" id="sec-inicio">
+
+        <!-- Stats dashboard -->
+        <div class="stats-row">
+            <div class="stat-box">
+                <div class="num" id="statTotal">0</div>
+                <div class="lbl">Total Registros</div>
+            </div>
+            <div class="stat-box" style="border-color: var(--danger)">
+                <div class="num" id="statIrreg" style="color:var(--danger)">0</div>
+                <div class="lbl">Irregularidades</div>
+            </div>
+            <div class="stat-box" style="border-color: var(--warning)">
+                <div class="num" id="statAlert" style="color:var(--warning)">0</div>
+                <div class="lbl">Alertas</div>
+            </div>
+            <div class="stat-box" style="border-color: var(--success)">
+                <div class="num" id="statOk" style="color:var(--success)">0</div>
+                <div class="lbl">Normales</div>
+            </div>
+        </div>
+
+        <!-- Accesos directos veeduría -->
+        <div class="card accent">
+            <h2>🔍 Portal Oficial de Contratación</h2>
+            <p style="font-size:.88rem; color:var(--muted); margin-bottom:.9rem;">Consulta contratos del Estado Colombiano en tiempo real.</p>
+            <div class="veeduria-grid">
+                <a href="https://www.contratos.gov.co/consultas/inicioConsulta.do" target="_blank" rel="noopener" class="vlink secop1">
+                    <span class="icon">🌐</span>
+                    <span>SECOP I<br><small style="font-weight:400;opacity:.85">Procesos anteriores</small></span>
+                </a>
+                <a href="https://community.secop.gov.co/Public/Tendering/ContractNoticeManagement/Index?currentLanguage=es-CO&Page=1&isPublicArea=True" target="_blank" rel="noopener" class="vlink secop2">
+                    <span class="icon">🚀</span>
+                    <span>SECOP II<br><small style="font-weight:400;opacity:.85">Tiempo real</small></span>
+                </a>
+                <a href="https://paco.casals.gov.co/" target="_blank" rel="noopener" class="vlink paco">
+                    <span class="icon">🛡️</span>
+                    <span>Portal PACO<br><small style="font-weight:400;opacity:.85">Anticorrupción</small></span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Últimos registros (preview 3) -->
+        <div class="card">
+            <h2>📋 Últimos Registros</h2>
+            <div id="latestList"></div>
+        </div>
+
+    </section>
+
+    <!-- ═══════════════ SECCIÓN: REGISTRO ═══════════════ -->
+    <section class="section" id="sec-registro">
+
+        <div class="card">
+            <h2>✍️ Nuevo Hallazgo de Veeduría</h2>
+
+            <div class="form-group">
+                <label>Entidad o Municipio</label>
+                <input type="text" id="pEntity" placeholder="Ej: Alcaldía de Caucasia">
+            </div>
+
+            <div class="form-group">
+                <label>Objeto del Contrato / Proyecto</label>
+                <textarea id="pName" placeholder="Descripción de la obra, compra o servicio contratado"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Valor del Contrato (COP)</label>
+                <input type="number" id="pBudget" placeholder="0" min="0">
+            </div>
+
+            <div class="form-group">
+                <label>Hallazgo / Estado</label>
+                <select id="pStatus">
+                    <option value="Correcto">✅ Ejecución Normal</option>
+                    <option value="Alerta">⚠️ Alerta / Retraso</option>
+                    <option value="Irregularidad">🚨 Posible Irregularidad</option>
+                    <option value="Terminado">🏁 Terminado con Éxito</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Observaciones adicionales</label>
+                <textarea id="pNotes" placeholder="Detalle del hallazgo, evidencia fotográfica, testigos, etc." style="min-height:80px;"></textarea>
+            </div>
+
+            <button class="btn btn-primary" id="btnSaveProject">💾 Guardar en Mi Diario</button>
+        </div>
+
+    </section>
+
+    <!-- ═══════════════ SECCIÓN: DIARIO ═══════════════ -->
+    <section class="section" id="sec-diario">
+
+        <div class="card">
+            <h2>📖 Mi Diario de Veeduría</h2>
+
+            <!-- Filtro rápido -->
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+                <button class="btn btn-sm" style="background:var(--primary);color:#fff;" onclick="filterTable('all')">Todos</button>
+                <button class="btn btn-sm" style="background:#16a34a;color:#fff;" onclick="filterTable('Correcto')">✅ Normal</button>
+                <button class="btn btn-sm" style="background:#d97706;color:#fff;" onclick="filterTable('Alerta')">⚠️ Alerta</button>
+                <button class="btn btn-sm" style="background:#dc2626;color:#fff;" onclick="filterTable('Irregularidad')">🚨 Irregularidad</button>
+                <button class="btn btn-sm" style="background:#374151;color:#fff;" onclick="filterTable('Terminado')">🏁 Terminado</button>
+            </div>
+
+            <div class="table-wrap">
+                <table id="projectTable">
+                    <thead>
+                        <tr>
+                            <th>Entidad</th>
+                            <th>Objeto</th>
+                            <th>Valor</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="emptyDiario" class="empty-state" style="display:none;">
+                <div class="icon">📭</div>
+                <p>Aún no tienes registros.<br>Ve a "Registrar" para agregar el primero.</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ═══════════════ SECCIÓN: GUÍA ═══════════════ -->
+    <section class="section" id="sec-guia">
+
+        <div class="card">
+            <h2>📘 Guía de Ética del Veedor</h2>
+            <ul class="guide-list">
+                <li>
+                    <div class="step-num">1</div>
+                    <div><strong>Verificar:</strong> Que lo que dice el papel coincida con la obra física. Visita el sitio, toma fotos con fecha.</div>
+                </li>
+                <li>
+                    <div class="step-num">2</div>
+                    <div><strong>Documentar:</strong> Recolecta actas, facturas, testimonios. La evidencia es tu herramienta más poderosa.</div>
+                </li>
+                <li>
+                    <div class="step-num">3</div>
+                    <div><strong>Denunciar:</strong> Ante la Contraloría General o la Procuraduría si detectas desvío de recursos públicos.</div>
+                </li>
+                <li>
+                    <div class="step-num">4</div>
+                    <div><strong>Rendición de Cuentas:</strong> Informa a la comunidad tus hallazgos en asambleas o redes sociales locales.</div>
+                </li>
+                <li>
+                    <div class="step-num">5</div>
+                    <div><strong>Imparcialidad:</strong> El veedor actúa con objetividad y no puede tener conflicto de intereses con el contratista.</div>
+                </li>
+            </ul>
+            <blockquote>"El erario público es sagrado, cada peso cuenta para el progreso del pueblo."</blockquote>
+        </div>
+
+        <div class="card success">
+            <h2>📞 Líneas de Denuncia Oficiales</h2>
+            <ul class="guide-list">
+                <li>
+                    <div class="step-num" style="background:var(--success);">📞</div>
+                    <div><strong>Contraloría General de la República:</strong> Línea gratuita <a href="tel:018000910842" style="color:var(--primary);font-weight:700;">018000 910842</a></div>
+                </li>
+                <li>
+                    <div class="step-num" style="background:var(--success);">🌐</div>
+                    <div><strong>Denuncia en línea:</strong> <a href="https://www.contraloria.gov.co" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700;">contraloria.gov.co</a></div>
+                </li>
+                <li>
+                    <div class="step-num" style="background:var(--success);">🛡️</div>
+                    <div><strong>Procuraduría General:</strong> <a href="https://www.procuraduria.gov.co" target="_blank" rel="noopener" style="color:var(--primary);font-weight:700;">procuraduria.gov.co</a></div>
+                </li>
+            </ul>
+        </div>
+
+    </section>
+
+    <!-- ═══════════════ SECCIÓN: BACKUP ═══════════════ -->
+    <section class="section" id="sec-backup">
+
+        <div class="card">
+            <h2>💾 Respaldo de Datos</h2>
+            <p style="font-size:.88rem; color:var(--muted); margin-bottom:1rem;">Exporta todos tus registros a un archivo JSON para guardarlos o restaurarlos en otro dispositivo.</p>
+            <div class="backup-row">
+                <button onclick="exportData()" class="btn btn-success">
+                    📥 Descargar Backup (JSON)
+                </button>
+                <input type="file" id="importFile" style="display:none" accept=".json" onchange="importData(event)">
+                <button onclick="document.getElementById('importFile').click()" class="btn btn-purple">
+                    📤 Restaurar desde Backup
+                </button>
+            </div>
+        </div>
+
+        <div class="card danger">
+            <h2>🗑️ Zona de Peligro</h2>
+            <p style="font-size:.88rem; color:var(--muted); margin-bottom:1rem;">Esta acción elimina <strong>todos los registros</strong> del dispositivo de forma permanente.</p>
+            <button onclick="clearAll()" class="btn btn-danger">⚠️ Borrar Todos los Registros</button>
+        </div>
+
+    </section>
+
+</div><!-- /container -->
+
+<!-- ── FOOTER ────────────────────────────────────────────────── -->
+<footer>
+    Desarrollada por <strong>Vibras Positivas HM</strong> — Derechos de Autor Reservados © 2026
+</footer>
+
+<!-- ── BOTTOM NAV ─────────────────────────────────────────────── -->
+<nav class="bottom-nav">
+    <button class="active" onclick="goTo('inicio', this)">
+        <span class="icon">🏠</span>Inicio
+    </button>
+    <button onclick="goTo('registro', this)">
+        <span class="icon">✍️</span>Registrar
+    </button>
+    <button onclick="goTo('diario', this)">
+        <span class="icon">📋</span>Diario
+    </button>
+    <button onclick="goTo('guia', this)">
+        <span class="icon">📘</span>Guía
+    </button>
+    <button onclick="goTo('backup', this)">
+        <span class="icon">💾</span>Backup
+    </button>
+</nav>
+
+<!-- ── TOAST ─────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
 <script>
-    let projects = JSON.parse(localStorage.getItem('gp_veeduria_v1')) || [];
-    const projectTable = document.querySelector('#projectTable tbody');
+    // ── Storage ──────────────────────────────────────────────────
+    const KEY = 'gp_veeduria_v2';
+    let projects = [];
 
-    function updateUI() {
-        projectTable.innerHTML = '';
-        projects.forEach(p => {
-            const row = `
-                <tr>
-                    <td><strong>${p.entity}</strong></td>
-                    <td>${p.name}</td>
-                    <td>$${p.budget.toLocaleString()}</td>
-                    <td><span class="tag" style="background:${getStatusColor(p.status)}; color:white">${p.status}</span></td>
-                    <td><button onclick="deleteItem(${p.id})" class="btn-danger" style="padding:5px 10px; font-size:10px;">X</button></td>
-                </tr>
-            `;
-            projectTable.innerHTML += row;
-        });
+    function load() {
+        try { projects = JSON.parse(localStorage.getItem(KEY)) || []; } catch { projects = []; }
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(projects)); }
+
+    // ── Navegación ───────────────────────────────────────────────
+    function goTo(sec, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + sec).classList.add('active');
+        document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (sec === 'diario') renderTable();
+        if (sec === 'inicio') renderLatest();
+        window.scrollTo(0, 0);
     }
 
-    function getStatusColor(status) {
-        if(status === 'Correcto') return '#27ae60';
-        if(status === 'Alerta') return '#f39c12';
-        if(status === 'Irregularidad') return '#c0392b';
-        return '#34495e';
+    // ── Toast ────────────────────────────────────────────────────
+    function toast(msg, dur = 2800) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), dur);
     }
 
-    document.getElementById('projectForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const newItem = {
-            id: Date.now(),
-            entity: document.getElementById('pEntity').value,
-            name: document.getElementById('pName').value,
-            budget: parseFloat(document.getElementById('pBudget').value),
-            status: document.getElementById('pStatus').value
-        };
-        projects.push(newItem);
+    // ── Status helpers ───────────────────────────────────────────
+    function statusColor(s) {
+        return { Correcto:'#16a34a', Alerta:'#d97706', Irregularidad:'#dc2626', Terminado:'#374151' }[s] || '#374151';
+    }
+    function statusIcon(s) {
+        return { Correcto:'✅', Alerta:'⚠️', Irregularidad:'🚨', Terminado:'🏁' }[s] || '•';
+    }
+
+    // ── Stats dashboard ──────────────────────────────────────────
+    function updateStats() {
+        document.getElementById('statTotal').textContent = projects.length;
+        document.getElementById('statIrreg').textContent = projects.filter(p => p.status === 'Irregularidad').length;
+        document.getElementById('statAlert').textContent = projects.filter(p => p.status === 'Alerta').length;
+        document.getElementById('statOk').textContent    = projects.filter(p => p.status === 'Correcto' || p.status === 'Terminado').length;
+    }
+
+    // ── Últimos registros (inicio) ───────────────────────────────
+    function renderLatest() {
+        updateStats();
+        const el = document.getElementById('latestList');
+        const last = [...projects].reverse().slice(0, 3);
+        if (!last.length) {
+            el.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>No hay registros aún.</p></div>';
+            return;
+        }
+        el.innerHTML = last.map(p => `
+            <div style="display:flex; align-items:center; gap:10px; padding:.7rem 0; border-bottom:1px solid #f0f2f8;">
+                <span class="tag" style="background:${statusColor(p.status)}">${statusIcon(p.status)} ${p.status}</span>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:700; font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.entity}</div>
+                    <div style="font-size:.78rem; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div>
+                </div>
+                <div style="font-weight:700; font-size:.82rem; color:var(--primary); white-space:nowrap;">$${Number(p.budget).toLocaleString('es-CO')}</div>
+            </div>
+        `).join('');
+    }
+
+    // ── Tabla diario ─────────────────────────────────────────────
+    let currentFilter = 'all';
+    function renderTable(filter) {
+        if (filter !== undefined) currentFilter = filter;
+        const data = currentFilter === 'all' ? projects : projects.filter(p => p.status === currentFilter);
+        const tbody = document.querySelector('#projectTable tbody');
+        const empty = document.getElementById('emptyDiario');
+
+        if (!data.length) {
+            tbody.innerHTML = '';
+            empty.style.display = 'block';
+            document.getElementById('projectTable').style.display = 'none';
+            return;
+        }
+        empty.style.display = 'none';
+        document.getElementById('projectTable').style.display = '';
+        tbody.innerHTML = [...data].reverse().map(p => `
+            <tr>
+                <td><strong style="font-size:.85rem;">${p.entity}</strong></td>
+                <td style="max-width:160px; font-size:.83rem; color:var(--muted);">${p.name.slice(0,60)}${p.name.length>60?'…':''}</td>
+                <td style="white-space:nowrap; font-size:.83rem;">$${Number(p.budget).toLocaleString('es-CO')}</td>
+                <td><span class="tag" style="background:${statusColor(p.status)}">${statusIcon(p.status)}</span></td>
+                <td><button onclick="deleteItem(${p.id})" class="btn btn-sm btn-danger">✕</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function filterTable(f) { renderTable(f); }
+
+    // ── Guardar registro ─────────────────────────────────────────
+    document.getElementById('btnSaveProject').addEventListener('click', () => {
+        const entity = document.getElementById('pEntity').value.trim();
+        const name   = document.getElementById('pName').value.trim();
+        const budget = parseFloat(document.getElementById('pBudget').value) || 0;
+        const status = document.getElementById('pStatus').value;
+        const notes  = document.getElementById('pNotes').value.trim();
+
+        if (!entity || !name) { toast('⚠️ Completa Entidad y Objeto'); return; }
+
+        projects.push({ id: Date.now(), entity, name, budget, status, notes, date: new Date().toISOString() });
         save();
-        updateUI();
-        e.target.reset();
+        updateStats();
+        renderLatest();
+
+        // Limpiar form
+        ['pEntity','pName','pBudget','pNotes'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('pStatus').selectedIndex = 0;
+
+        toast('✅ Hallazgo guardado correctamente');
+
+        // Volver a Inicio
+        goTo('inicio', document.querySelector('.bottom-nav button:first-child'));
     });
 
-    function save() { localStorage.setItem('gp_veeduria_v1', JSON.stringify(projects)); }
-
+    // ── Eliminar ──────────────────────────────────────────────────
     function deleteItem(id) {
+        if (!confirm('¿Eliminar este registro?')) return;
         projects = projects.filter(p => p.id !== id);
         save();
-        updateUI();
+        renderTable();
+        updateStats();
+        renderLatest();
+        toast('🗑️ Registro eliminado');
     }
 
-    // SISTEMA DE BACKUP
+    // ── Borrar todo ───────────────────────────────────────────────
+    function clearAll() {
+        if (!confirm('⚠️ ¿Borrar TODOS los registros? Esta acción no se puede deshacer.')) return;
+        projects = [];
+        save();
+        renderTable();
+        updateStats();
+        renderLatest();
+        toast('🗑️ Todos los registros han sido eliminados');
+    }
+
+    // ── Backup ────────────────────────────────────────────────────
     function exportData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(projects, null, 2));
-        const dlAnchor = document.createElement('a');
-        dlAnchor.setAttribute("href", dataStr);
-        dlAnchor.setAttribute("download", "VEEDURIA_HM_BACKUP_" + new Date().toISOString().slice(0,10) + ".json");
-        dlAnchor.click();
+        if (!projects.length) { toast('ℹ️ No hay datos para exportar'); return; }
+        const json = JSON.stringify(projects, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `VEEDURIA_HM_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('📥 Backup descargado');
     }
 
     function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-            projects = JSON.parse(e.target.result);
-            save();
-            updateUI();
-            alert("Información restaurada correctamente.");
+            try {
+                const imported = JSON.parse(e.target.result);
+                if (!Array.isArray(imported)) throw new Error('Formato inválido');
+                projects = imported;
+                save();
+                updateStats();
+                renderLatest();
+                toast('📤 Datos restaurados: ' + projects.length + ' registros');
+                event.target.value = '';
+            } catch {
+                toast('❌ Archivo inválido o corrupto');
+            }
         };
-        reader.readAsText(event.target.files[0]);
+        reader.readAsText(file);
     }
 
-    updateUI();
+    // ── Online / Offline status ───────────────────────────────────
+    function setOnlineStatus() {
+        const el = document.getElementById('pwaStatus');
+        if (navigator.onLine) {
+            el.textContent = '🟢 En línea';
+            el.className = 'online';
+        } else {
+            el.textContent = '🔴 Sin conexión (modo offline)';
+            el.className = 'offline';
+        }
+    }
+    window.addEventListener('online',  setOnlineStatus);
+    window.addEventListener('offline', setOnlineStatus);
+
+    // ── PWA: Install prompt ───────────────────────────────────────
+    let deferredPrompt = null;
+    const banner   = document.getElementById('installBanner');
+    const btnInst  = document.getElementById('btnInstall');
+    const btnClose = document.getElementById('btnCloseBanner');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        banner.style.display = 'flex';
+    });
+
+    btnInst.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        banner.style.display = 'none';
+        if (outcome === 'accepted') toast('🎉 App instalada correctamente');
+    });
+
+    btnClose.addEventListener('click', () => { banner.style.display = 'none'; });
+
+    window.addEventListener('appinstalled', () => {
+        toast('✅ Gobernanza Pro instalada exitosamente');
+        banner.style.display = 'none';
+    });
+
+    // ── Service Worker ────────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('[PWA] SW registrado:', reg.scope))
+                .catch(err => console.warn('[PWA] SW error:', err));
+        });
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────
+    load();
+    setOnlineStatus();
+    renderLatest();
 </script>
 
 </body>
